@@ -47,6 +47,10 @@
         background-position: center; /* center the image */
         background-attachment: fixed;
       }
+      .active{
+        background-color: black;
+        color: white;
+      }
     </style>
   </head>
   <body class="bg-art">
@@ -108,6 +112,10 @@
         <h1 class="text-xl font-bold text-center rounded-2xl">Our Foods</h1>
         <div class="divider"></div>
 
+        <div id="loading-spinner" class="min-h-[60vh] flex flex-col justify-center items-center bg-white hidden">
+          <span class="loading loading-dots loading-xl"></span>
+        </div>
+
         <div class="" id="food-container">
           <!-- sample card  -->
           <!-- <div class="p-5 bg-white flex gap-3 shadow rounded-xl">
@@ -144,10 +152,11 @@
       >
         <h1 class="text-xl font-bold text-center rounded-2xl">Cart</h1>
         <div class="divider"></div>
-        <div class="" id="cart-container">
+
+        <div class="grid grid-cols-1 gap-5" id="cart-container">
           <!-- sample cart  -->
 
-          <div class="p-1 bg-white flex gap-3 shadow rounded-xl relative">
+          <!-- <div class="p-1 bg-white flex gap-3 shadow rounded-xl relative">
             <div class="img">
               <img
                 src="https://www.themealdb.com/images/media/meals/1520081754.jpg"
@@ -171,11 +180,11 @@
             >
               <i class="fa-solid fa-xmark"></i>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <div class="bg-[#FEBF00] mt-10">
-          <h2 class="p-3 text-white font-bold">Total $<span>560</span>BDT</h2>
+          <h2 class="p-3 text-white font-bold">Total $<span id="cart-total">0</span>BDT</h2>
         </div>
       </section>
     </main>

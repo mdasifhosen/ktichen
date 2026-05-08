@@ -6,22 +6,30 @@ const loadCategory = () => {
       .then((data) => displayCategory(data.categories));
 }
 
+let cart = []
+let total=0
 // load food
 const loadFoods = (id) => {
+
+  // food container k hide korbo + loading k show korbo
+  document.getElementById("food-container").classList.add("hidden")
+  document.getElementById("loading-spinner").classList.remove("hidden");
+
     const url = ` https://taxi-kitchen-api.vercel.app/api/v1/categories/${id}`;
     fetch(url)
       .then((res) => res.json())
-      .then((data) => displayFoods(data.foods));
+    .then((data) => displayFoods(data.foods));
+  
+  // active class remove
+  const catBtns = document.querySelectorAll(".btn-category")
+  catBtns.forEach(btn=>btn.classList?.remove('active'))
+
+  
+  // active class
+  const currentBtn = document.getElementById(`cat-btn-${id}`)
+  currentBtn?.classList?.add('active')
 }
 
-// area: "Moroccan";
-// catId: 4;
-// category: "Lamb";
-// foodImg: "https://www.themealdb.com/images/media/meals/yuwtuu1511295751.jpg";
-// id: 52843;
-// price: 360;
-// title: "Lamb Tagine";
-// video: "https://www.youtube.com/watch?v=bR5Cqu84S_k";
 const loadFoodDetails = (id) => {
     const url = ` https://taxi-kitchen-api.vercel.app/api/v1/foods/${id}`
     fetch(url)
@@ -47,7 +55,7 @@ const displayCategory = (categories) => {
     for (let cat of categories) {
         const categoryCard = document.createElement('div')
         categoryCard.innerHTML = `
-             <button onclick="loadFoods('${cat.id}')" class="btn justify-start btn-block shadow btn-category h-10">
+             <button id="cat-btn-${cat.id}" onclick="loadFoods('${cat.id}')" class="btn justify-start btn-block shadow btn-category h-10">
             <img
               src="${cat.categoryImg}"
               alt=""
@@ -62,7 +70,7 @@ const displayCategory = (categories) => {
 
 // display foods
 const displayFoods = (foods) => {
-  console.log(foods);
+  // console.log(foods);
   const foodContainer = document.getElementById("food-container");
   foodContainer.innerHTML = "";
 
@@ -70,16 +78,17 @@ const displayFoods = (foods) => {
     const foodCard = document.createElement("div");
 
     foodCard.innerHTML = `
-            <div onclick="loadFoodDetails(${food.id})" class="p-5 bg-white flex gap-3 shadow rounded-xl">
+            <div class="p-5 bg-white flex gap-3 shadow rounded-xl">
             <div class="img flex-1">
               <img
                 src="${food.foodImg}"
                 alt=""
-                class="w-[160px] rounded-xl h-[160px] object-cover"
+                 onclick="loadFoodDetails(${food.id})"
+                class="w-[160px] rounded-xl h-[160px] object-cover food-img"
               />
             </div>
             <div class="flex-2">
-              <h1 class="text-xl font-bold">
+              <h1 class="text-xl font-bold food-title">
                ${food.title}
               </h1>
 
@@ -87,11 +96,11 @@ const displayFoods = (foods) => {
 
               <div class="divider divider-end">
                 <h2 class="text-yellow-600 font-semibold">
-                  $ <span class="price">${food.price}</span> BDT
+                  $ <span class="price food-price">${food.price}</span> BDT
                 </h2>
               </div>
 
-              <button class="btn btn-warning">
+              <button onclick="addtoCart(this)" class="btn btn-warning">
                 <i class="fa-solid fa-square-plus"></i>
                 Add This Item
               </button>
@@ -100,10 +109,13 @@ const displayFoods = (foods) => {
         `;
     foodContainer.append(foodCard);
   });
+  document.getElementById("loading-spinner").classList.add("hidden");
+  document.getElementById("food-container").classList.remove("hidden");
+
 };
 
 const displayDetails = (food) => {
-    console.log(food)
+    // console.log(food)
     const detailsContainer = document.getElementById("details-container")
     detailsContainer.innerHTML=''
     detailsContainer.innerHTML = `
@@ -128,3 +140,81 @@ const displayDetails = (food) => {
 }
 loadCategory()
 loadRandomData();
+loadFoods(11)
+
+
+// document.getElementById("food-container").addEventListener('click', (e) => {
+//   console.log(e.target)
+// })
+
+const addtoCart = (btn,event) => {
+  
+  const card = btn.parentNode.parentNode
+  const foodTitle = card.querySelector(".food-title").innerText
+  const foodImage = card.querySelector(".food-img").src
+  const foodPrice = card.querySelector(".food-price").innerText
+  const foodPriceNum=Number(foodPrice)
+  // console.log(foodTitle, foodImage, foodPriceNum)
+  
+  const selectedItem = {
+    foodTitle: foodTitle,
+    foodImage:foodImage,
+    foodPrice:foodPriceNum
+  }
+  cart.push(selectedItem)
+  total=total+foodPriceNum
+  displayCart(cart)
+  displayTotal(total)
+
+
+}
+
+const displayTotal = (val) => {
+  document.getElementById("cart-total").innerHTML=val
+}
+
+const displayCart = (cart) => {
+  const cartContainer = document.getElementById("cart-container")
+  cartContainer.innerHTML = ''
+
+  for (let item of cart) {
+    console.log(item)
+    const newItem = document.createElement("div")
+    newItem.innerHTML = `
+      <div class="p-1 bg-white flex gap-3 shadow rounded-xl relative">
+            <div class="img">
+              <img
+                src="${item.foodImage}"
+                alt=""
+                class="w-[50px] rounded-xl h-[50px] object-cover"
+              />
+            </div>
+            <div class="flex-1">
+              <h1 class="text-xs font-bold food-title">
+                ${item.foodTitle}
+              </h1>
+
+              <div class="">
+                <h2 class="text-yellow-600 font-semibold">
+                  $ <span class="price">${item.foodPrice}</span> BDT
+                </h2>
+              </div>
+            </div>
+            <div onclick="removeCart(this)"
+              class="w-6 h-6 flex justify-center items-center bg-red-600 rounded-full absolute -top-1 -right-1 text-white"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+    `;
+    cartContainer.append(newItem)
+  }
+  
+}
+
+const removeCart = (btn) => {
+  const item = btn.parentNode
+  const foodTitle = item.querySelector(".food-title").innerText
+  
+  console.log(cart)
+}
