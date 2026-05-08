@@ -14,6 +14,22 @@ const loadFoods = (id) => {
       .then((data) => displayFoods(data.foods));
 }
 
+// area: "Moroccan";
+// catId: 4;
+// category: "Lamb";
+// foodImg: "https://www.themealdb.com/images/media/meals/yuwtuu1511295751.jpg";
+// id: 52843;
+// price: 360;
+// title: "Lamb Tagine";
+// video: "https://www.youtube.com/watch?v=bR5Cqu84S_k";
+const loadFoodDetails = (id) => {
+    const url = ` https://taxi-kitchen-api.vercel.app/api/v1/foods/${id}`
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => displayDetails(data.details));
+        
+}
+
 // random data site e asle deakabe
 const loadRandomData = () => {
     const url = "https://taxi-kitchen-api.vercel.app/api/v1/foods/random";
@@ -54,7 +70,7 @@ const displayFoods = (foods) => {
     const foodCard = document.createElement("div");
 
     foodCard.innerHTML = `
-            <div class="p-5 bg-white flex gap-3 shadow rounded-xl">
+            <div onclick="loadFoodDetails(${food.id})" class="p-5 bg-white flex gap-3 shadow rounded-xl">
             <div class="img flex-1">
               <img
                 src="${food.foodImg}"
@@ -85,5 +101,30 @@ const displayFoods = (foods) => {
     foodContainer.append(foodCard);
   });
 };
+
+const displayDetails = (food) => {
+    console.log(food)
+    const detailsContainer = document.getElementById("details-container")
+    detailsContainer.innerHTML=''
+    detailsContainer.innerHTML = `
+        <div class="">
+            <h2 class="text-3xl font-bold">${food.title}</h2>
+        </div>
+        <div class="mt-5">
+            <img class="rounded-md" src="${food.foodImg}" alt="">
+        </div>
+        <div class="badge badge-primary mt-5">
+            ${food.area}
+        </div>
+        <div class="badge badge-primary mt-5">
+            ${food.price} TK
+        </div>
+        <a href="${food.video}" target="blank" class="btn btn-warning mt-5"> watch Video</a>
+    
+    `;
+    document.getElementById("my_modal_3").showModal()
+   
+    
+}
 loadCategory()
 loadRandomData();
