@@ -100,7 +100,7 @@ const displayFoods = (foods) => {
                 </h2>
               </div>
 
-              <button onclick="addtoCart(this)" class="btn btn-warning">
+              <button id="add-btn-${food.id}" onclick="addtoCart(this)" class="btn btn-warning">
                 <i class="fa-solid fa-square-plus"></i>
                 Add This Item
               </button>
@@ -108,6 +108,10 @@ const displayFoods = (foods) => {
           </div>
         `;
     foodContainer.append(foodCard);
+    document.getElementById(`add-btn-${food.id}`).addEventListener('click', () => {
+      e.stopPropagation()
+    
+    })
   });
   document.getElementById("loading-spinner").classList.add("hidden");
   document.getElementById("food-container").classList.remove("hidden");
@@ -157,6 +161,7 @@ const addtoCart = (btn,event) => {
   // console.log(foodTitle, foodImage, foodPriceNum)
   
   const selectedItem = {
+    id:cart.length +1,
     foodTitle: foodTitle,
     foodImage:foodImage,
     foodPrice:foodPriceNum
@@ -183,6 +188,7 @@ const displayCart = (cart) => {
     newItem.innerHTML = `
       <div class="p-1 bg-white flex gap-3 shadow rounded-xl relative">
             <div class="img">
+            <span class="hidden cart-id">${item.id}</span>
               <img
                 src="${item.foodImage}"
                 alt=""
@@ -196,7 +202,7 @@ const displayCart = (cart) => {
 
               <div class="">
                 <h2 class="text-yellow-600 font-semibold">
-                  $ <span class="price">${item.foodPrice}</span> BDT
+                  $ <span class="item-price">${item.foodPrice}</span> BDT
                 </h2>
               </div>
             </div>
@@ -214,7 +220,15 @@ const displayCart = (cart) => {
 
 const removeCart = (btn) => {
   const item = btn.parentNode
-  const foodTitle = item.querySelector(".food-title").innerText
+  const id = Number(item.querySelector(".cart-id").innerText);
+  // const foodTitle = item.querySelector(".food-title").innerText
+  const itemPrice = Number(item.querySelector(".item-price").innerText)
+
+  cart = cart.filter(item => item.id !== id)
   
-  console.log(cart)
+  total = 0
+  cart.forEach(item => (total += item.foodPrice))
+  displayCart(cart)
+  displayTotal(total)
+  
 }
